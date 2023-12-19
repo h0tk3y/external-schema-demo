@@ -1,9 +1,9 @@
-import com.h0tk3y.kotlin.staticObjectNotation.analysis.*
+import com.h0tk3y.kotlin.staticObjectNotation.analysis.AnalysisSchema
+import com.h0tk3y.kotlin.staticObjectNotation.analysis.ResolutionResult
+import com.h0tk3y.kotlin.staticObjectNotation.analysis.SchemaTypeRefContext
+import com.h0tk3y.kotlin.staticObjectNotation.analysis.defaultCodeResolver
 import com.h0tk3y.kotlin.staticObjectNotation.astToLanguageTree.*
 import com.h0tk3y.kotlin.staticObjectNotation.language.AstSourceIdentifier
-import com.h0tk3y.kotlin.staticObjectNotation.language.DataStatement
-import com.h0tk3y.kotlin.staticObjectNotation.language.FunctionArgument
-import com.h0tk3y.kotlin.staticObjectNotation.language.FunctionCall
 import com.h0tk3y.kotlin.staticObjectNotation.objectGraph.*
 import com.h0tk3y.kotlin.staticObjectNotation.serialization.SchemaSerialization
 import kotlinx.ast.common.ast.Ast
@@ -15,15 +15,18 @@ internal fun interpretFromFiles(scriptFile: File, schemaFile: File) {
     val scriptContent = scriptFile.readText()
     val schema = SchemaSerialization.schemaFromJsonString(schemaFile.readText())
     
-    val topLevelObject = interpret(scriptContent, schema)
+    val context = contextForSchemaFile(schemaFile)
+    
+    val topLevelObject = interpret(scriptContent, schema, context)
     println(prettyStringFromReflection(topLevelObject))
 }
 
 private fun interpret(
     scriptContent: String,
-    analysisSchema: AnalysisSchema
+    analysisSchema: AnalysisSchema,
+    evaluationContext: EvaluationContext
 ): ObjectReflection {
-    val resolver = defaultCodeResolver(analyzeEverythingExceptPluginsBlock)
+    val resolver = defaultCodeResolver(analysisStatementFilterFor(evaluationContext))
     val ast = astFromScript(scriptContent).singleOrNull()
         ?: error("no AST produced from script source")
 
@@ -50,33 +53,19 @@ private fun interpret(
     return reflect(resolution.topLevelReceiver, context)
 }
 
-private
-val analyzeEverythingExceptPluginsBlock = AnalysisStatementFilter { statement, scopes ->
-    if (scopes.last().receiver is ObjectOrigin.TopLevelReceiver) {
-        !isPluginsCall(statement)
-    } else true
-}
-
-private
-fun isPluginsCall(statement: DataStatement) =
-    statement is FunctionCall && statement.name == "plugins" && statement.args.size == 1 && statement.args.single() is FunctionArgument.Lambda
-
-private
-fun languageModelFromAst(ast: Ast): LanguageTreeResult =
+private fun languageModelFromAst(ast: Ast): LanguageTreeResult =
     languageTreeBuilder.build(ast, AstSourceIdentifier(ast, "source"))
 
-private
-val languageTreeBuilder = LanguageTreeBuilderWithTopLevelBlock(DefaultLanguageTreeBuilder())
+private val languageTreeBuilder = LanguageTreeBuilderWithTopLevelBlock(DefaultLanguageTreeBuilder())
 
 
-private
-fun astFromScript(scriptSource: String): List<Ast> =
+private fun astFromScript(scriptSource: String): List<Ast> =
     try {
         parseToAst(scriptSource)
     } catch (e: ParseCancellationException) {
         emptyList()
     }
 
-private
-fun assignmentTrace(result: ResolutionResult) =
+private fun assignmentTrace(result: ResolutionResult) =
     AssignmentTracer { AssignmentResolver() }.produceAssignmentTrace(result)
+
