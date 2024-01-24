@@ -1,15 +1,15 @@
+
 import com.h0tk3y.kotlin.staticObjectNotation.analysis.AnalysisSchema
 import com.h0tk3y.kotlin.staticObjectNotation.analysis.ResolutionResult
 import com.h0tk3y.kotlin.staticObjectNotation.analysis.SchemaTypeRefContext
 import com.h0tk3y.kotlin.staticObjectNotation.analysis.defaultCodeResolver
-import com.h0tk3y.kotlin.staticObjectNotation.astToLanguageTree.*
-import com.h0tk3y.kotlin.staticObjectNotation.language.AstSourceIdentifier
+import com.h0tk3y.kotlin.staticObjectNotation.astToLanguageTree.DefaultLanguageTreeBuilder
+import com.h0tk3y.kotlin.staticObjectNotation.astToLanguageTree.LanguageTreeResult
+import com.h0tk3y.kotlin.staticObjectNotation.astToLanguageTree.parseToLightTree
+import com.h0tk3y.kotlin.staticObjectNotation.language.SourceIdentifier
 import com.h0tk3y.kotlin.staticObjectNotation.objectGraph.*
 import com.h0tk3y.kotlin.staticObjectNotation.serialization.SchemaSerialization
-import kotlinx.ast.common.ast.Ast
-import org.antlr.v4.kotlinruntime.misc.ParseCancellationException
 import java.io.File
-import java.util.Collections.emptyList
 
 internal fun interpretFromFiles(scriptFile: File, schemaFile: File) {
     val scriptContent = scriptFile.readText()
@@ -26,18 +26,16 @@ private fun interpret(
     analysisSchema: AnalysisSchema,
     evaluationContext: EvaluationContext
 ): ObjectReflection {
-    val resolver = defaultCodeResolver(analysisStatementFilterFor(evaluationContext))
-    val ast = astFromScript(scriptContent).singleOrNull()
-        ?: error("no AST produced from script source")
-
-    val languageModel = languageModelFromAst(ast)
-    val failures = languageModel.results.filterIsInstance<FailingResult>()
+    val languageModel = languageModelFromScriptSource(scriptContent)
+    
+    val failures = languageModel.allFailures
     if (failures.isNotEmpty()) {
         println(failures)
         error("failures found in the script")
     }
-    val elements = languageModel.results.filterIsInstance<Element<*>>().map { it.element }
-    val resolution = resolver.resolve(analysisSchema, elements)
+    
+    val resolver = defaultCodeResolver(analysisStatementFilterFor(evaluationContext))
+    val resolution = resolver.resolve(analysisSchema, languageModel.imports, languageModel.topLevelBlock)
     if (resolution.errors.isNotEmpty()) {
         println(resolution.errors)
         error("errors in resolution")
@@ -53,18 +51,10 @@ private fun interpret(
     return reflect(resolution.topLevelReceiver, context)
 }
 
-private fun languageModelFromAst(ast: Ast): LanguageTreeResult =
-    languageTreeBuilder.build(ast, AstSourceIdentifier(ast, "source"))
-
-private val languageTreeBuilder = LanguageTreeBuilderWithTopLevelBlock(DefaultLanguageTreeBuilder())
-
-
-private fun astFromScript(scriptSource: String): List<Ast> =
-    try {
-        parseToAst(scriptSource)
-    } catch (e: ParseCancellationException) {
-        emptyList()
-    }
+private fun languageModelFromScriptSource(scriptSource: String): LanguageTreeResult {
+    val (tree, code, codeOffset) = parseToLightTree(scriptSource)
+    return DefaultLanguageTreeBuilder().build(tree, code, codeOffset, SourceIdentifier("script file"))
+}
 
 private fun assignmentTrace(result: ResolutionResult) =
     AssignmentTracer { AssignmentResolver() }.produceAssignmentTrace(result)

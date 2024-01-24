@@ -17,7 +17,7 @@ internal fun prettyStringFromReflection(objectReflection: ObjectReflection): Str
 
             is ObjectReflection.DataObjectReflection -> {
                 append(current.type.toString() + (if (current.identity != -1L) "#" + current.identity else "") + " ")
-                if (current.identity == -1L || visitedIdentity.add(current.identity)) {
+                if (current.identity in -1L..0L || visitedIdentity.add(current.identity)) {
                     if (shouldMentionOrigin(current.objectOrigin)) {
                         append("from " + current.objectOrigin + " ")
                     }
@@ -36,6 +36,16 @@ internal fun prettyStringFromReflection(objectReflection: ObjectReflection): Str
                         }
                         current.addedObjects.forEach {
                             append("${nextIndent()}+ added ")
+                            recurse(it, depth + 1)
+                            append("\n")
+                        }
+                        current.customAccessorObjects.forEach { 
+                            append("${nextIndent()}.${customAccessorOriginToString(it.objectOrigin)} ")
+                            recurse(it, depth + 1)
+                            append("\n")
+                        }
+                        current.lambdaAccessedObjects.forEach { 
+                            append("${nextIndent()}.${lambdaAccessorOriginToString(it.objectOrigin)} ")
                             recurse(it, depth + 1)
                             append("\n")
                         }
@@ -75,6 +85,16 @@ internal fun prettyStringFromReflection(objectReflection: ObjectReflection): Str
     }
 
     return buildString { recurse(objectReflection, 0) }
+}
+
+private fun customAccessorOriginToString(objectOrigin: ObjectOrigin) = when (objectOrigin) {
+    is ObjectOrigin.CustomConfigureAccessor -> objectOrigin.accessor.customAccessorIdentifier
+    else -> objectOrigin.toString()
+}
+
+private fun lambdaAccessorOriginToString(objectOrigin: ObjectOrigin) = when (objectOrigin) {
+    is ObjectOrigin.ConfiguringLambdaReceiver -> objectOrigin.function.simpleName + "{}"
+    else -> objectOrigin.toString()
 }
 
 private fun isDefaultOnlyObject(obj: ObjectReflection.DataObjectReflection): Boolean {
