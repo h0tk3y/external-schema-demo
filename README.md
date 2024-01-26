@@ -102,4 +102,57 @@ Settings#0 {
 }
 ```
 
- 
+### Demo project
+
+Clone the `gradle/restricted-dsl-demo` branch of https://github.com/gradle/nowinandroid:
+
+```shell
+git clone --branch gradle/restricted-dsl-demo https://github.com/gradle/nowinandroid
+cd nowinandroid
+```
+
+Run a Gradle build in that repository:
+
+```shell
+./gradlew :projects
+```
+
+It will produce the schema files:
+* `.gradle/restricted-schema/settings.somethings.schema` for `settings.gradle.something`
+* `feature/search/.gradle/restricted-schema/plugins.somethings.schema` for `feature/search/build.gradle.something`
+* `feature/search/.gradle/restricted-schema/project.somethings.schema` for `feature/search/build.gradle.something`
+
+After that, run the demo app, for example:
+
+* To produce a raw (unvalidated) DOM of a project file:
+    ```shell
+    ./build/install/external-schema-demo/bin/external-schema-demo\
+        --script ../nowinandroid/feature/search/build.gradle.something \
+        --mode DOM
+    ```
+
+* To produce a resolved DOM view of the settings file:
+    ```shell
+    ./build/install/external-schema-demo/bin/external-schema-demo \
+        --script ../nowinandroid/settings.gradle.something \
+        --schema ../nowinandroid/.gradle/restricted-schema/settings.something.schema \
+        --mode DOM
+    ```
+
+* To produce a resolved DOM view of a project file with source locations:
+    ```shell
+    ./build/install/external-schema-demo/bin/external-schema-demo \
+        --script ../nowinandroid/feature/search/build.gradle.something \
+        --schema ../nowinandroid/feature/search/.gradle/restricted-schema/project.something.schema \
+        --mode DOM \
+        --locations true
+    ```
+
+* To produce a low-level view of a project file with source locations:
+    ```shell
+    ./build/install/external-schema-demo/bin/external-schema-demo \
+        --script ../nowinandroid/feature/search/build.gradle.something \
+        --schema ../nowinandroid/feature/search/.gradle/restricted-schema/project.something.schema \
+        --mode LOWLEVEL \
+        --locations true
+    ```
