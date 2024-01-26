@@ -31,11 +31,51 @@ To build a distribution in `build/install/external-schema-demo`, run:
 
     * `--script <file>` pointing to a `settings.gradle.something` or `build.gradle.something` file;
     * `--schema <file>` pointing to an exported schema file produced by the previous step
+    * `--mode={LOWLEVEL|DOM}` (the default is `DOM`) to specify which view of the data to use (see [Data Views](#data-views))
    
 3. The resulting output is the content of the top-level-receiver. 
    Starting from the top level, each object has its properties and _added objects_ printed recursively.
 
-### Example output
+### Data Views
+
+The demo supports two kinds of data representation. You can choose one of them by using the `--mode=...` option.
+
+#### `DOM` data representation
+
+This representation accesses the declarative file via a high-level API. It can print either a "raw" document that 
+has not been validated against any schema (for this, do not pass `--schema=...`) or a resolved document, which has all of its content validated against the schema.
+
+Passing `--locations=true` in the DOM view will also add the source indices to the content nodes in the output. 
+
+Here's an example output of a resolved document (the resolution results are the labels like `✓:Point` or `+:Access`):
+```text
+element("restricted", configure:Extension) {
+    property("id", ✓:String, literal("test"))
+    property("referencePoint", ✓:Point, valueFactory("point", ✓:Point, literal(1), literal(2)))
+    element("primaryAccess", configure:Access) {
+        property("read", ✓:Boolean, literal(false))
+        property("write", ✓:Boolean, literal(false))
+    }
+    element("secondaryAccess", +:Access) {
+        property("name", ✓:String, literal("two"))
+        property("read", ✓:Boolean, literal(true))
+        property("write", ✓:Boolean, literal(false))
+    }
+    element("secondaryAccess", +:Access) {
+        property("name", ✓:String, literal("three"))
+        property("read", ✓:Boolean, literal(true))
+        property("write", ✓:Boolean, literal(true))
+    }
+}
+```
+
+
+#### `LOWLEVEL` data representation
+
+This form is the view on the data that Gradle is using under the hood before mapping the declarative file content 
+to the JVM objects.
+
+An example output of this view:
 
 ```
 Settings#0 {
@@ -59,31 +99,7 @@ Settings#0 {
     + added by call: (top-level-object).enableFeaturePreview#13(name = "TYPESAFE_PROJECT_ACCESSORS")
     + added by call: (top-level-object).include#14(projectPath = ":app")
     + added by call: (top-level-object).include#15(projectPath = ":app-nia-catalog")
-    + added by call: (top-level-object).include#16(projectPath = ":benchmarks")
-    + added by call: (top-level-object).include#17(projectPath = ":core:common")
-    + added by call: (top-level-object).include#18(projectPath = ":core:data")
-    + added by call: (top-level-object).include#19(projectPath = ":core:data-test")
-    + added by call: (top-level-object).include#20(projectPath = ":core:database")
-    + added by call: (top-level-object).include#21(projectPath = ":core:datastore")
-    + added by call: (top-level-object).include#22(projectPath = ":core:datastore-proto")
-    + added by call: (top-level-object).include#23(projectPath = ":core:datastore-test")
-    + added by call: (top-level-object).include#24(projectPath = ":core:designsystem")
-    + added by call: (top-level-object).include#25(projectPath = ":core:domain")
-    + added by call: (top-level-object).include#26(projectPath = ":core:model")
-    + added by call: (top-level-object).include#27(projectPath = ":core:network")
-    + added by call: (top-level-object).include#28(projectPath = ":core:ui")
-    + added by call: (top-level-object).include#29(projectPath = ":core:testing")
-    + added by call: (top-level-object).include#30(projectPath = ":core:analytics")
-    + added by call: (top-level-object).include#31(projectPath = ":core:notifications")
-    + added by call: (top-level-object).include#32(projectPath = ":feature:foryou")
-    + added by call: (top-level-object).include#33(projectPath = ":feature:interests")
-    + added by call: (top-level-object).include#34(projectPath = ":feature:bookmarks")
-    + added by call: (top-level-object).include#35(projectPath = ":feature:topic")
-    + added by call: (top-level-object).include#36(projectPath = ":feature:search")
-    + added by call: (top-level-object).include#37(projectPath = ":feature:settings")
-    + added by call: (top-level-object).include#38(projectPath = ":lint")
-    + added by call: (top-level-object).include#39(projectPath = ":sync:work")
-    + added by call: (top-level-object).include#40(projectPath = ":sync:sync-test")
-    + added by call: (top-level-object).include#41(projectPath = ":ui-test-hilt-manifest")
 }
 ```
+
+ 
