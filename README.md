@@ -153,6 +153,5 @@ After that, run the demo app, for example:
     ./build/install/external-schema-demo/bin/external-schema-demo \
         --script ../nowinandroid/feature/search/build.gradle.something \
         --schema ../nowinandroid/feature/search/.gradle/restricted-schema/project.something.schema \
-        --mode LOWLEVEL \
-        --locations true
+        --mode LOWLEVEL
     ```
