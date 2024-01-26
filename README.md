@@ -148,7 +148,7 @@ After that, run the demo app, for example:
         --locations true
     ```
 
-* To produce a low-level view of a project file with source locations:
+* To produce a low-level view of a project file:
     ```shell
     ./build/install/external-schema-demo/bin/external-schema-demo \
         --script ../nowinandroid/feature/search/build.gradle.something \
