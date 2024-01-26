@@ -31,7 +31,7 @@ To build a distribution in `build/install/external-schema-demo`, run:
 
     * `--script <file>` pointing to a `settings.gradle.something` or `build.gradle.something` file;
     * `--schema <file>` pointing to an exported schema file produced by the previous step
-    * `--mode={LOWLEVEL|DOM}` (the default is `DOM`) to specify which view of the data to use (see [Data Views](#data-views))
+    * `--mode={LOWLEVEL|DOM}` (the default is `LOWLEVEL`) to specify which view of the data to use (see [Data Views](#data-views))
    
 3. The resulting output is the content of the top-level-receiver. 
    Starting from the top level, each object has its properties and _added objects_ printed recursively.
