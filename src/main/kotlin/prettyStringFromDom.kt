@@ -50,9 +50,14 @@ internal fun prettyStringFromDom(
             append(indent)
             when (node) {
                 is ElementNode -> {
-                    appendLine(elementFormatter.formatElementHeader(node) + " {")
-                    node.content.forEach { visit(it, depth + 1) }
-                    appendLine("$indent}")
+                    append(elementFormatter.formatElementHeader(node))
+                    if (node.content.isNotEmpty()) {
+                        appendLine(" {") 
+                        node.content.forEach { visit(it, depth + 1) }
+                        appendLine("$indent}")
+                    } else {
+                        appendLine()
+                    }
                 }
 
                 is PropertyNode -> {
@@ -109,7 +114,7 @@ class RawValueFactoryFormatter(private val settings: FormattingSettings, literal
     
     override fun formatValueFactory(value: ValueFactoryNode): String =
         "valueFactory${settings.sourceOrEmpty(value.sourceData)}(" +
-                (listOf("'${value.factoryName}'") + value.values.map { valueFormatter.formatValue(it) }).joinToString() +
+                (listOf("\"${value.factoryName}\"") + value.values.map { valueFormatter.formatValue(it) }).joinToString() +
                 ")"
 }
 
@@ -119,7 +124,7 @@ class RawPropertyFormatter(
 ) : PropertyNodeFormatter {
     override fun formatPropertyLhs(property: PropertyNode): String =
         "property${settings.sourceOrEmpty(property.sourceData)}(" +
-                "'${property.name}', " +
+                "\"${property.name}\", " +
                 valueFormatter.formatValue(property.value) +
                 ")"
 }
@@ -130,7 +135,7 @@ class RawElementHeaderFormatter(
 ) : ElementHeaderFormatter {
     override fun formatElementHeader(element: ElementNode): String =
         "element${settings.sourceOrEmpty(element.sourceData)}(" +
-                (listOf("'${element.name}'") + element.elementValues.map(valueFormatter::formatValue)).joinToString() +
+                (listOf("\"${element.name}\"") + element.elementValues.map(valueFormatter::formatValue)).joinToString() +
                 ")"
 }
 
@@ -143,7 +148,7 @@ class ResolvedValueFactoryFormatter(
     
     override fun formatValueFactory(value: ValueFactoryNode): String {
         require(value is ResolvedValueFactoryNode)
-        return "valueFactory${settings.sourceOrEmpty(value.sourceData)}('${value.factoryName}', " +
+        return "valueFactory${settings.sourceOrEmpty(value.sourceData)}(\"${value.factoryName}\", " +
                 (listOf(resolutionString(value.resolution)) + value.values.map { valueFormatter.formatValue(it) }).joinToString() +
                 ")"
     }
@@ -163,7 +168,7 @@ class ResolvedPropertyFormatter(
     override fun formatPropertyLhs(property: PropertyNode): String {
         require(property is ResolvedPropertyNode)
         return "property${settings.sourceOrEmpty(property.sourceData)}(" +
-                "'${property.name}', " +
+                "\"${property.name}\", " +
                 "${resolutionString(property.resolution)}, " +
                 valueFormatter.formatValue(property.value) +
                 ")"
@@ -182,7 +187,7 @@ class ResolvedElementHeaderFormatter(
     override fun formatElementHeader(element: ElementNode): String {
         require(element is ResolvedElementNode)
         return "element${settings.sourceOrEmpty(element.sourceData)}(" +
-                (listOf("'${element.name}'", resolutionString(element.resolution))
+                (listOf("\"${element.name}\"", resolutionString(element.resolution))
                         + element.elementValues.map(valueFormatter::formatValue)).joinToString() +
                 ")"
     }
