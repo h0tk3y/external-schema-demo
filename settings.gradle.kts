@@ -22,7 +22,6 @@ pluginManagement {
                 
                 library("kson", "com.h0tk3y", "kotlin-static-object-notation").withoutVersion()
                 
-                library("ast", "kotlinx.ast:grammar-kotlin-parser-antlr-kotlin:0.1.0")
                 library("clikt", "com.github.ajalt.clikt:clikt:4.2.1")
             }
         }

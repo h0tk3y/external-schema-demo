@@ -3,13 +3,13 @@ import com.h0tk3y.kotlin.staticObjectNotation.analysis.AnalysisSchema
 import com.h0tk3y.kotlin.staticObjectNotation.analysis.ResolutionResult
 import com.h0tk3y.kotlin.staticObjectNotation.analysis.SchemaTypeRefContext
 import com.h0tk3y.kotlin.staticObjectNotation.analysis.defaultCodeResolver
-import com.h0tk3y.kotlin.staticObjectNotation.astToLanguageTree.DefaultLanguageTreeBuilder
-import com.h0tk3y.kotlin.staticObjectNotation.astToLanguageTree.LanguageTreeResult
-import com.h0tk3y.kotlin.staticObjectNotation.astToLanguageTree.parseToLightTree
 import com.h0tk3y.kotlin.staticObjectNotation.dom.resolvedDocument
 import com.h0tk3y.kotlin.staticObjectNotation.dom.toDocument
 import com.h0tk3y.kotlin.staticObjectNotation.language.SourceIdentifier
 import com.h0tk3y.kotlin.staticObjectNotation.objectGraph.*
+import com.h0tk3y.kotlin.staticObjectNotation.parsing.DefaultLanguageTreeBuilder
+import com.h0tk3y.kotlin.staticObjectNotation.parsing.LanguageTreeResult
+import com.h0tk3y.kotlin.staticObjectNotation.parsing.parse
 
 internal fun interpretWithObjectReflection(
     languageModel: LanguageTreeResult,
@@ -64,7 +64,7 @@ private fun interpret(
 }
 
 internal fun languageModelFromScriptSource(scriptSource: String): LanguageTreeResult {
-    val (tree, code, codeOffset) = parseToLightTree(scriptSource)
+    val (tree, code, codeOffset) = parse(scriptSource)
     return DefaultLanguageTreeBuilder().build(tree, code, codeOffset, SourceIdentifier("script file"))
 }
 

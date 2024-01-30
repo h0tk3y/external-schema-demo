@@ -5,7 +5,6 @@ plugins {
 
 dependencies {
     implementation(libs.kson)
-    implementation(libs.ast)
     implementation(libs.clikt)
     
     implementation(kotlin("compiler-embeddable"))
