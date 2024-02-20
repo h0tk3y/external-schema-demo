@@ -7,9 +7,13 @@ pluginManagement {
             gradlePluginPortal()
         }
         if (this == dependencyResolutionManagement.repositories) {
-            maven("https://jitpack.io")
-            maven("/Users/sergey.igushkin/Projects/Gradle/gradle/kotlin-static-object-notation/build/publication")
-            mavenLocal()
+            maven {
+                name = "Gradle public repository"
+                url = uri("https://repo.gradle.org/artifactory/libs-snapshots/")
+                content {
+                    includeGroup("org.gradle")
+                }
+            }
         }
     }
     repositories.setup()
@@ -19,13 +23,12 @@ pluginManagement {
             create("libs") {
                 val kotlinVersion = version("kotlin", "1.9.20")
                 plugin("kotlin.jvm", "org.jetbrains.kotlin.jvm").versionRef(kotlinVersion)
-                
-                library("kson", "com.h0tk3y", "kotlin-static-object-notation").withoutVersion()
-                
+
+                val declarativeDslCoreVersion = "8.8-20240222001206+0000"
+                library("kson", "org.gradle", "gradle-declarative-dsl-core").version(declarativeDslCoreVersion)
+
                 library("clikt", "com.github.ajalt.clikt:clikt:4.2.1")
             }
         }
     }
 }
-
-includeBuild("kotlin-static-object-notation")

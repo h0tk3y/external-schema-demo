@@ -1,6 +1,6 @@
-import com.h0tk3y.kotlin.staticObjectNotation.analysis.DataType
-import com.h0tk3y.kotlin.staticObjectNotation.analysis.ObjectOrigin
-import com.h0tk3y.kotlin.staticObjectNotation.objectGraph.ObjectReflection
+import org.gradle.internal.declarativedsl.analysis.ObjectOrigin
+import org.gradle.internal.declarativedsl.language.DataType
+import org.gradle.internal.declarativedsl.objectGraph.ObjectReflection
 
 internal fun prettyStringFromReflection(objectReflection: ObjectReflection): String {
     val visitedIdentity = mutableSetOf<Long>()

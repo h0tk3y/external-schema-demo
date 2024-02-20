@@ -1,17 +1,17 @@
-import com.h0tk3y.kotlin.staticObjectNotation.analysis.AnalysisSchema
-import com.h0tk3y.kotlin.staticObjectNotation.analysis.SchemaTypeRefContext
-import com.h0tk3y.kotlin.staticObjectNotation.analysis.TypeRefContext
-import com.h0tk3y.kotlin.staticObjectNotation.dom.*
-import com.h0tk3y.kotlin.staticObjectNotation.dom.DeclarativeDocument.DocumentNode.*
-import com.h0tk3y.kotlin.staticObjectNotation.dom.DeclarativeDocument.ValueNode
-import com.h0tk3y.kotlin.staticObjectNotation.dom.DeclarativeDocument.ValueNode.LiteralValueNode
-import com.h0tk3y.kotlin.staticObjectNotation.dom.DeclarativeDocument.ValueNode.ValueFactoryNode
-import com.h0tk3y.kotlin.staticObjectNotation.dom.DocumentResolution.ElementResolution.SuccessfulElementResolution
-import com.h0tk3y.kotlin.staticObjectNotation.dom.DocumentResolution.ValueResolution.ValueFactoryResolution
-import com.h0tk3y.kotlin.staticObjectNotation.dom.ResolvedDeclarativeDocument.ResolvedDocumentNode.ResolvedElementNode
-import com.h0tk3y.kotlin.staticObjectNotation.dom.ResolvedDeclarativeDocument.ResolvedDocumentNode.ResolvedPropertyNode
-import com.h0tk3y.kotlin.staticObjectNotation.dom.ResolvedDeclarativeDocument.ResolvedValueNode.ResolvedValueFactoryNode
-import com.h0tk3y.kotlin.staticObjectNotation.language.SourceData
+import org.gradle.internal.declarativedsl.analysis.SchemaTypeRefContext
+import org.gradle.internal.declarativedsl.analysis.TypeRefContext
+import org.gradle.internal.declarativedsl.dom.*
+import org.gradle.internal.declarativedsl.dom.DeclarativeDocument.DocumentNode.*
+import org.gradle.internal.declarativedsl.dom.DeclarativeDocument.ValueNode
+import org.gradle.internal.declarativedsl.dom.DeclarativeDocument.ValueNode.LiteralValueNode
+import org.gradle.internal.declarativedsl.dom.DeclarativeDocument.ValueNode.ValueFactoryNode
+import org.gradle.internal.declarativedsl.dom.DocumentResolution.ElementResolution.SuccessfulElementResolution
+import org.gradle.internal.declarativedsl.dom.DocumentResolution.ValueResolution.ValueFactoryResolution
+import org.gradle.internal.declarativedsl.dom.ResolvedDeclarativeDocument.ResolvedDocumentNode.ResolvedElementNode
+import org.gradle.internal.declarativedsl.dom.ResolvedDeclarativeDocument.ResolvedDocumentNode.ResolvedPropertyNode
+import org.gradle.internal.declarativedsl.dom.ResolvedDeclarativeDocument.ResolvedValueNode.ResolvedValueFactoryNode
+import org.gradle.internal.declarativedsl.language.SourceData
+import org.gradle.internal.declarativedsl.analysis.AnalysisSchema
 
 internal fun prettyStringFromDom(
     document: DeclarativeDocument,

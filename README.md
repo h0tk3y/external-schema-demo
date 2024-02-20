@@ -3,9 +3,8 @@
 This is a demonstration of interpreting Restricted DSL files using a schema exported
 from a Gradle build.
 
-> ⚠️ If cloning this repository, please also clone the submodules recursively:
 > ```shell
-> git clone --recurse-submodules https://github.com/h0tk3y/external-schema-demo
+> git clone https://github.com/h0tk3y/external-schema-demo
 > ```
 
 ### Building

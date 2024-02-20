@@ -1,9 +1,9 @@
-import com.h0tk3y.kotlin.staticObjectNotation.analysis.AnalysisStatementFilter
-import com.h0tk3y.kotlin.staticObjectNotation.analysis.ObjectOrigin
-import com.h0tk3y.kotlin.staticObjectNotation.analysis.analyzeEverything
-import com.h0tk3y.kotlin.staticObjectNotation.language.DataStatement
-import com.h0tk3y.kotlin.staticObjectNotation.language.FunctionArgument
-import com.h0tk3y.kotlin.staticObjectNotation.language.FunctionCall
+import org.gradle.internal.declarativedsl.analysis.AnalysisStatementFilter
+import org.gradle.internal.declarativedsl.analysis.ObjectOrigin
+import org.gradle.internal.declarativedsl.analysis.analyzeEverything
+import org.gradle.internal.declarativedsl.language.DataStatement
+import org.gradle.internal.declarativedsl.language.FunctionArgument
+import org.gradle.internal.declarativedsl.language.FunctionCall
 import java.io.File
 
 internal sealed interface EvaluationContext {

@@ -5,7 +5,7 @@ import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.boolean
 import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
-import com.h0tk3y.kotlin.staticObjectNotation.serialization.SchemaSerialization
+import org.gradle.internal.declarativedsl.serialization.SchemaSerialization
 
 class ExternalSchemaDemo : CliktCommand() {
     private enum class InterpretationMode {

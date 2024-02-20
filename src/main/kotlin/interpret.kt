@@ -1,15 +1,15 @@
 
-import com.h0tk3y.kotlin.staticObjectNotation.analysis.AnalysisSchema
-import com.h0tk3y.kotlin.staticObjectNotation.analysis.ResolutionResult
-import com.h0tk3y.kotlin.staticObjectNotation.analysis.SchemaTypeRefContext
-import com.h0tk3y.kotlin.staticObjectNotation.analysis.defaultCodeResolver
-import com.h0tk3y.kotlin.staticObjectNotation.dom.resolvedDocument
-import com.h0tk3y.kotlin.staticObjectNotation.dom.toDocument
-import com.h0tk3y.kotlin.staticObjectNotation.language.SourceIdentifier
-import com.h0tk3y.kotlin.staticObjectNotation.objectGraph.*
-import com.h0tk3y.kotlin.staticObjectNotation.parsing.DefaultLanguageTreeBuilder
-import com.h0tk3y.kotlin.staticObjectNotation.parsing.LanguageTreeResult
-import com.h0tk3y.kotlin.staticObjectNotation.parsing.parse
+import org.gradle.internal.declarativedsl.analysis.AnalysisSchema
+import org.gradle.internal.declarativedsl.analysis.ResolutionResult
+import org.gradle.internal.declarativedsl.analysis.SchemaTypeRefContext
+import org.gradle.internal.declarativedsl.analysis.defaultCodeResolver
+import org.gradle.internal.declarativedsl.dom.resolvedDocument
+import org.gradle.internal.declarativedsl.dom.toDocument
+import org.gradle.internal.declarativedsl.language.SourceIdentifier
+import org.gradle.internal.declarativedsl.objectGraph.*
+import org.gradle.internal.declarativedsl.parsing.DefaultLanguageTreeBuilder
+import org.gradle.internal.declarativedsl.language.LanguageTreeResult
+import org.gradle.internal.declarativedsl.parsing.parse
 
 internal fun interpretWithObjectReflection(
     languageModel: LanguageTreeResult,
