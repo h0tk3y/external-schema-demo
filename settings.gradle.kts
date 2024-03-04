@@ -24,8 +24,8 @@ pluginManagement {
                 val kotlinVersion = version("kotlin", "1.9.20")
                 plugin("kotlin.jvm", "org.jetbrains.kotlin.jvm").versionRef(kotlinVersion)
 
-                val declarativeDslCoreVersion = "8.8-20240222001206+0000"
-                library("kson", "org.gradle", "gradle-declarative-dsl-core").version(declarativeDslCoreVersion)
+                val declarativeDslCoreVersion = "8.8-20240303001623+0000"
+                library("declarativeDslCore", "org.gradle", "gradle-declarative-dsl-core").version(declarativeDslCoreVersion)
 
                 library("clikt", "com.github.ajalt.clikt:clikt:4.2.1")
             }

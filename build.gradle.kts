@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.kson)
+    implementation(libs.declarativeDslCore)
     implementation(libs.clikt)
     
     implementation(kotlin("compiler-embeddable"))
