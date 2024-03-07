@@ -84,14 +84,6 @@ Settings#0 {
             + added MavenArtifactRepository#11 from (top-level-object).dependencyResolutionManagement_default.repositories_default.mavenCentral#11()
         }
     }
-    pluginManagement = PluginManagementSpec {
-        repositories = RepositoryHandler {
-            + added MavenArtifactRepository#5 from (top-level-object).pluginManagement_default.repositories_default.google#5()
-            + added MavenArtifactRepository#6 from (top-level-object).pluginManagement_default.repositories_default.mavenCentral#6()
-            + added ArtifactRepository#7 from (top-level-object).pluginManagement_default.repositories_default.gradlePluginPortal#7()
-        }
-        + added by call: (top-level-object).pluginManagement_default.includeBuild#3(rootProject = "build-logic")
-    }
     rootProject = ProjectDescriptor {
         name = "test"
     }
@@ -117,9 +109,13 @@ Run a Gradle build in that repository:
 ```
 
 It will produce the schema files:
-* `.gradle/restricted-schema/settings.somethings.schema` for `settings.gradle.something`
-* `feature/search/.gradle/restricted-schema/plugins.somethings.schema` for `feature/search/build.gradle.something`
-* `feature/search/.gradle/restricted-schema/project.somethings.schema` for `feature/search/build.gradle.something`
+* For the `settings.gradle.something` file:
+  * `.gradle/restricted-schema/settingsPluginManagement.somethings.schema` – for evaluating `pluginManagement { ... }` 
+  * `.gradle/restricted-schema/settingsPlugins.somethings.schema` for evaluating `plugins { ... }` in the settings file
+  * `.gradle/restricted-schema/settings.somethings.schema` for the rest of the settings file content
+* For a build file, e.g. `feature/search/build.gradle.something`:
+  * `feature/search/.gradle/restricted-schema/plugins.somethings.schema` for the `plugins { ... }` block;
+  * `feature/search/.gradle/restricted-schema/project.somethings.schema` for the rest of the build file.
 
 After that, run the demo app, for example:
 

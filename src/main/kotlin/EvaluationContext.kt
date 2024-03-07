@@ -1,59 +1,41 @@
-import org.gradle.internal.declarativedsl.analysis.AnalysisStatementFilter
-import org.gradle.internal.declarativedsl.analysis.ObjectOrigin
-import org.gradle.internal.declarativedsl.analysis.analyzeEverything
-import org.gradle.internal.declarativedsl.language.DataStatement
-import org.gradle.internal.declarativedsl.language.FunctionArgument
-import org.gradle.internal.declarativedsl.language.FunctionCall
+import org.gradle.internal.declarativedsl.analysis.*
+import org.gradle.internal.declarativedsl.analysis.AnalysisStatementFilter.Companion.isCallNamed
+import org.gradle.internal.declarativedsl.analysis.AnalysisStatementFilter.Companion.isConfiguringCall
+import org.gradle.internal.declarativedsl.analysis.AnalysisStatementFilter.Companion.isTopLevelElement
 import java.io.File
+import java.util.Locale
 
-internal sealed interface EvaluationContext {
-    val fileName: String?
+enum class EvaluationContext {
+    SettingsPluginManagement,
+    SettingsPlugins,
+    Settings,
+    Plugins,
+    Project,
+    Unknown {
+        override val fileName get() = null
+    };
     
-    data object Settings : EvaluationContext {
-        override val fileName = "settings"
-    }
-    
-    data object Plugins : EvaluationContext {
-        override val fileName = "plugins"
-    }
-
-    data object Project : EvaluationContext {
-        override val fileName = "project"
-    }
-    
-    data object Unknown : EvaluationContext {
-        override val fileName = null
-    }
+    open val fileName: String? = name.replaceFirstChar { it.lowercase(Locale.getDefault()) }
 }
 
 internal fun contextForSchemaFile(schemaFile: File) =
-    when (schemaFile.name) {
-        "settings$schemaFilenameSuffix" -> EvaluationContext.Settings 
-        "plugins$schemaFilenameSuffix" -> EvaluationContext.Plugins 
-        "project$schemaFilenameSuffix" -> EvaluationContext.Project 
-        else -> EvaluationContext.Unknown
-    }
+    enumValues<EvaluationContext>().find { schemaFile.name == it.fileName + schemaFilenameSuffix }
 
-internal val schemaFilenameSuffix = ".something.schema"
+
+private const val schemaFilenameSuffix = ".something.schema"
 
 internal fun analysisStatementFilterFor(evaluationContext: EvaluationContext) = when (evaluationContext) {
-    EvaluationContext.Plugins -> analyzeTopLevelPluginsBlockOnly
-    EvaluationContext.Project -> analyzeEverythingExceptPluginsBlock
-    EvaluationContext.Settings -> analyzeEverythingExceptPluginsBlock
+    EvaluationContext.Plugins -> pluginsOnly
+    EvaluationContext.Project -> ignorePlugins
+    EvaluationContext.Settings -> ignorePluginsAndPluginManagement
+    EvaluationContext.SettingsPluginManagement -> pluginManagementOnly
+    EvaluationContext.SettingsPlugins -> pluginsOnly
     EvaluationContext.Unknown -> analyzeEverything
 }
 
-private val analyzeTopLevelPluginsBlockOnly = AnalysisStatementFilter { statement, scopes ->
-    if (scopes.last().receiver is ObjectOrigin.TopLevelReceiver) {
-        isPluginsCall(statement)
-    } else true
-}
-
-private val analyzeEverythingExceptPluginsBlock = AnalysisStatementFilter { statement, scopes ->
-    if (scopes.last().receiver is ObjectOrigin.TopLevelReceiver) {
-        !isPluginsCall(statement)
-    } else true
-}
-
-private fun isPluginsCall(statement: DataStatement) =
-    statement is FunctionCall && statement.name == "plugins" && statement.args.size == 1 && statement.args.single() is FunctionArgument.Lambda
+private val isPluginManagement = isCallNamed("pluginManagement").and(isConfiguringCall)
+private val isPlugins = isCallNamed("plugins").and(isConfiguringCall)
+private val pluginsOnly = isTopLevelElement.implies(isPlugins)
+private val pluginManagementOnly = isTopLevelElement.implies(isPluginManagement)
+private val ignorePlugins = isTopLevelElement.implies(isPlugins.not())
+private val ignorePluginsAndPluginManagement = isTopLevelElement.implies(isPlugins.not().and(isPluginManagement.not()))
