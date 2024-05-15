@@ -1,6 +1,6 @@
 ### `external-schema-demo`
 
-This is a demonstration of interpreting Restricted DSL files using a schema exported
+This is a demonstration of interpreting Declarative DSL files using a schema exported
 from a Gradle build.
 
 > ```shell
@@ -18,17 +18,17 @@ To build a distribution in `build/install/external-schema-demo`, run:
 ```
 
 ### Usage
-1. Run a Gradle build that exports restricted DSL schemas for settings and projects
+1. Run a Gradle build that exports declarative DSL schemas for settings and projects
 
-    The Restricted DSL schemas may be found under `.gradle/restricted-schema/*.something.schema` in the root 
+    The Declarative DSL schemas may be found under `.gradle/declarative-schema/*.dcl.schema` in the root 
     project directory and in the subprojects.
 
     Note that schemas are only exported if a settings file or a project build file uses
-    the restricted DSL (`*.gradle.something`).
+    the Declarative DSL (`*.gradle.dcl`).
 
 2. Run this demo application with the following command line options:
 
-    * `--script <file>` pointing to a `settings.gradle.something` or `build.gradle.something` file;
+    * `--script <file>` pointing to a `settings.gradle.dcl` or `build.gradle.dcl` file;
     * `--schema <file>` pointing to an exported schema file produced by the previous step
     * `--mode={LOWLEVEL|DOM}` (the default is `LOWLEVEL`) to specify which view of the data to use (see [Data Views](#data-views))
    
@@ -109,36 +109,36 @@ Run a Gradle build in that repository:
 ```
 
 It will produce the schema files:
-* For the `settings.gradle.something` file:
-  * `.gradle/restricted-schema/settingsPluginManagement.somethings.schema` – for evaluating `pluginManagement { ... }` 
-  * `.gradle/restricted-schema/settingsPlugins.somethings.schema` for evaluating `plugins { ... }` in the settings file
-  * `.gradle/restricted-schema/settings.somethings.schema` for the rest of the settings file content
-* For a build file, e.g. `feature/search/build.gradle.something`:
-  * `feature/search/.gradle/restricted-schema/plugins.somethings.schema` for the `plugins { ... }` block;
-  * `feature/search/.gradle/restricted-schema/project.somethings.schema` for the rest of the build file.
+* For the `settings.gradle.dcl` file:
+  * `.gradle/declarative-schema/settingsPluginManagement.dcl.schema` – for evaluating `pluginManagement { ... }` 
+  * `.gradle/declarative-schema/settingsPlugins.dcl.schema` for evaluating `plugins { ... }` in the settings file
+  * `.gradle/declarative-schema/settings.dcl.schema` for the rest of the settings file content
+* For a build file, e.g. `feature/search/build.gradle.dcl`:
+  * `feature/search/.gradle/declarative-schema/plugins.dcl.schema` for the `plugins { ... }` block;
+  * `feature/search/.gradle/declarative-schema/project.dcl.schema` for the rest of the build file.
 
 After that, run the demo app, for example:
 
 * To produce a raw (unvalidated) DOM of a project file:
     ```shell
     ./build/install/external-schema-demo/bin/external-schema-demo\
-        --script ../nowinandroid/feature/search/build.gradle.something \
+        --script ../nowinandroid/feature/search/build.gradle.dcl \
         --mode DOM
     ```
 
 * To produce a resolved DOM view of the settings file:
     ```shell
     ./build/install/external-schema-demo/bin/external-schema-demo \
-        --script ../nowinandroid/settings.gradle.something \
-        --schema ../nowinandroid/.gradle/restricted-schema/settings.something.schema \
+        --script ../nowinandroid/settings.gradle.dcl \
+        --schema ../nowinandroid/.gradle/declarative-schema/settings.dcl.schema \
         --mode DOM
     ```
 
 * To produce a resolved DOM view of a project file with source locations:
     ```shell
     ./build/install/external-schema-demo/bin/external-schema-demo \
-        --script ../nowinandroid/feature/search/build.gradle.something \
-        --schema ../nowinandroid/feature/search/.gradle/restricted-schema/project.something.schema \
+        --script ../nowinandroid/feature/search/build.gradle.dcl \
+        --schema ../nowinandroid/feature/search/.gradle/declarative-schema/project.dcl.schema \
         --mode DOM \
         --locations true
     ```
@@ -146,7 +146,7 @@ After that, run the demo app, for example:
 * To produce a low-level view of a project file:
     ```shell
     ./build/install/external-schema-demo/bin/external-schema-demo \
-        --script ../nowinandroid/feature/search/build.gradle.something \
-        --schema ../nowinandroid/feature/search/.gradle/restricted-schema/project.something.schema \
+        --script ../nowinandroid/feature/search/build.gradle.dcl \
+        --schema ../nowinandroid/feature/search/.gradle/declarative-schema/project.dcl.schema \
         --mode LOWLEVEL
     ```

@@ -9,7 +9,6 @@ enum class EvaluationContext {
     SettingsPluginManagement,
     SettingsPlugins,
     Settings,
-    Plugins,
     Project,
     Unknown {
         override val fileName get() = null
@@ -22,11 +21,10 @@ internal fun contextForSchemaFile(schemaFile: File) =
     enumValues<EvaluationContext>().find { schemaFile.name == it.fileName + schemaFilenameSuffix }
 
 
-private const val schemaFilenameSuffix = ".something.schema"
+private const val schemaFilenameSuffix = ".dcl.schema"
 
 internal fun analysisStatementFilterFor(evaluationContext: EvaluationContext) = when (evaluationContext) {
-    EvaluationContext.Plugins -> pluginsOnly
-    EvaluationContext.Project -> ignorePlugins
+    EvaluationContext.Project -> analyzeEverything
     EvaluationContext.Settings -> ignorePluginsAndPluginManagement
     EvaluationContext.SettingsPluginManagement -> pluginManagementOnly
     EvaluationContext.SettingsPlugins -> pluginsOnly
@@ -37,5 +35,4 @@ private val isPluginManagement = isCallNamed("pluginManagement").and(isConfiguri
 private val isPlugins = isCallNamed("plugins").and(isConfiguringCall)
 private val pluginsOnly = isTopLevelElement.implies(isPlugins)
 private val pluginManagementOnly = isTopLevelElement.implies(isPluginManagement)
-private val ignorePlugins = isTopLevelElement.implies(isPlugins.not())
 private val ignorePluginsAndPluginManagement = isTopLevelElement.implies(isPlugins.not().and(isPluginManagement.not()))
