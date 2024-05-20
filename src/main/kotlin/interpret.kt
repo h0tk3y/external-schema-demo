@@ -1,5 +1,5 @@
 
-import org.gradle.internal.declarativedsl.analysis.AnalysisSchema
+import org.gradle.declarative.dsl.schema.AnalysisSchema
 import org.gradle.internal.declarativedsl.analysis.ResolutionResult
 import org.gradle.internal.declarativedsl.analysis.SchemaTypeRefContext
 import org.gradle.internal.declarativedsl.analysis.defaultCodeResolver
@@ -63,10 +63,8 @@ private fun interpret(
     return reflect(resolution.topLevelReceiver, context)
 }
 
-internal fun languageModelFromScriptSource(scriptSource: String): LanguageTreeResult {
-    val (tree, code, codeOffset) = parse(scriptSource)
-    return DefaultLanguageTreeBuilder().build(tree, code, codeOffset, SourceIdentifier("script file"))
-}
+internal fun languageModelFromScriptSource(scriptSource: String): LanguageTreeResult =
+    DefaultLanguageTreeBuilder().build(parse(scriptSource), SourceIdentifier("script file"))
 
 private fun assignmentTrace(result: ResolutionResult) =
     AssignmentTracer { AssignmentResolver() }.produceAssignmentTrace(result)

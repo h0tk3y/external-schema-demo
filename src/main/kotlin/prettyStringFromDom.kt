@@ -1,3 +1,4 @@
+import org.gradle.declarative.dsl.schema.AnalysisSchema
 import org.gradle.internal.declarativedsl.analysis.SchemaTypeRefContext
 import org.gradle.internal.declarativedsl.analysis.TypeRefContext
 import org.gradle.internal.declarativedsl.dom.*
@@ -11,7 +12,6 @@ import org.gradle.internal.declarativedsl.dom.ResolvedDeclarativeDocument.Resolv
 import org.gradle.internal.declarativedsl.dom.ResolvedDeclarativeDocument.ResolvedDocumentNode.ResolvedPropertyNode
 import org.gradle.internal.declarativedsl.dom.ResolvedDeclarativeDocument.ResolvedValueNode.ResolvedValueFactoryNode
 import org.gradle.internal.declarativedsl.language.SourceData
-import org.gradle.internal.declarativedsl.analysis.AnalysisSchema
 
 internal fun prettyStringFromDom(
     document: DeclarativeDocument,
@@ -23,12 +23,17 @@ internal fun prettyStringFromDom(
     val maybeTypeRefContext by lazy {
         SchemaTypeRefContext(requireNotNull(schema) { "schema must be provided to handle a resolved document" })
     }
-    
+
     val literalFormatter = LiteralFormatter(settings)
 
     val valueFormatter = ValueFormatter(
         when (document) {
-            is ResolvedDeclarativeDocument -> ResolvedValueFactoryFormatter(settings, literalFormatter, maybeTypeRefContext)
+            is ResolvedDeclarativeDocument -> ResolvedValueFactoryFormatter(
+                settings,
+                literalFormatter,
+                maybeTypeRefContext
+            )
+
             else -> RawValueFactoryFormatter(settings, literalFormatter)
         },
         literalFormatter
@@ -52,7 +57,7 @@ internal fun prettyStringFromDom(
                 is ElementNode -> {
                     append(elementFormatter.formatElementHeader(node))
                     if (node.content.isNotEmpty()) {
-                        appendLine(" {") 
+                        appendLine(" {")
                         node.content.forEach { visit(it, depth + 1) }
                         appendLine("$indent}")
                     } else {
@@ -75,7 +80,7 @@ internal fun prettyStringFromDom(
 class LiteralFormatter(private val settings: FormattingSettings) {
     fun formatLiteral(node: LiteralValueNode) =
         "literal${settings.sourceOrEmpty(node.sourceData)}(${formatValue(node.value)})"
-    
+
     private fun formatValue(value: Any) = when (value) {
         is String -> "\"$value\""
         else -> value.toString()
@@ -109,9 +114,10 @@ data class FormattingSettings(
     val withSourceLocations: Boolean
 )
 
-class RawValueFactoryFormatter(private val settings: FormattingSettings, literalFormatter: LiteralFormatter) : ValueFactoryFormatter {
+class RawValueFactoryFormatter(private val settings: FormattingSettings, literalFormatter: LiteralFormatter) :
+    ValueFactoryFormatter {
     private val valueFormatter = ValueFormatter(this, literalFormatter)
-    
+
     override fun formatValueFactory(value: ValueFactoryNode): String =
         "valueFactory${settings.sourceOrEmpty(value.sourceData)}(" +
                 (listOf("\"${value.factoryName}\"") + value.values.map { valueFormatter.formatValue(it) }).joinToString() +
@@ -145,7 +151,7 @@ class ResolvedValueFactoryFormatter(
     private val typeRefContext: TypeRefContext
 ) : ValueFactoryFormatter {
     private val valueFormatter = ValueFormatter(this, literalFormatter)
-    
+
     override fun formatValueFactory(value: ValueFactoryNode): String {
         require(value is ResolvedValueFactoryNode)
         return "valueFactory${settings.sourceOrEmpty(value.sourceData)}(\"${value.factoryName}\", " +
@@ -175,7 +181,9 @@ class ResolvedPropertyFormatter(
     }
 
     private fun resolutionString(resolution: DocumentResolution.PropertyResolution) = when (resolution) {
-        is DocumentResolution.PropertyResolution.PropertyAssignmentResolved -> "✓:${typeRefContext.resolveRef(resolution.property.type)}"
+        is DocumentResolution.PropertyResolution.PropertyAssignmentResolved ->
+            "✓:${typeRefContext.resolveRef(resolution.property.valueType)}"
+
         is DocumentResolution.UnsuccessfulResolution -> errorReasons(resolution)
     }
 }

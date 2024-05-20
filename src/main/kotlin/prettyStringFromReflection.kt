@@ -1,5 +1,5 @@
+import org.gradle.declarative.dsl.schema.DataType
 import org.gradle.internal.declarativedsl.analysis.ObjectOrigin
-import org.gradle.internal.declarativedsl.language.DataType
 import org.gradle.internal.declarativedsl.objectGraph.ObjectReflection
 
 internal fun prettyStringFromReflection(objectReflection: ObjectReflection): String {
@@ -10,7 +10,7 @@ internal fun prettyStringFromReflection(objectReflection: ObjectReflection): Str
         fun nextIndent() = "    ".repeat(depth + 1)
         when (current) {
             is ObjectReflection.ConstantValue -> append(
-                if (current.type == DataType.StringDataType)
+                if (current.type is DataType.StringDataType)
                     "\"${current.value}\""
                 else current.value.toString()
             )
@@ -39,12 +39,12 @@ internal fun prettyStringFromReflection(objectReflection: ObjectReflection): Str
                             recurse(it, depth + 1)
                             append("\n")
                         }
-                        current.customAccessorObjects.forEach { 
+                        current.customAccessorObjects.forEach {
                             append("${nextIndent()}.${customAccessorOriginToString(it.objectOrigin)} ")
                             recurse(it, depth + 1)
                             append("\n")
                         }
-                        current.lambdaAccessedObjects.forEach { 
+                        current.lambdaAccessedObjects.forEach {
                             append("${nextIndent()}.${lambdaAccessorOriginToString(it.objectOrigin)} ")
                             recurse(it, depth + 1)
                             append("\n")
@@ -56,7 +56,7 @@ internal fun prettyStringFromReflection(objectReflection: ObjectReflection): Str
                 }
             }
 
-            is ObjectReflection.External -> append("(external ${current.key.type}})")
+            is ObjectReflection.External -> append("(external ${current.key.objectType}})")
             is ObjectReflection.PureFunctionInvocation -> {
                 append(current.objectOrigin.function.simpleName)
                 append("#" + current.objectOrigin.invocationId)
