@@ -6,7 +6,7 @@ import com.h0tk3y.kotlin.staticObjectNotation.language.FunctionArgument
 import com.h0tk3y.kotlin.staticObjectNotation.language.FunctionCall
 import java.io.File
 
-internal sealed interface EvaluationContext {
+sealed interface EvaluationContext {
     val fileName: String?
     
     data object Settings : EvaluationContext {
